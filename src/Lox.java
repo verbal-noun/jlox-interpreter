@@ -6,15 +6,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
-import java.util.StringTokenizer;
+
 
 public class Lox {
+    // Attribute to indicate if there was error in the file
+    static boolean hadError = false;
+
     public static void main(String[] args) throws IOException {
         if(args.length > 1) {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
+        // If the file is specified
         } else if (args.length == 1) {
             runFile(args[0]);
+        // Open the prompt
         } else {
             runPrompt();
         }
@@ -39,10 +44,14 @@ public class Lox {
             // If 'Control + D' is pressed without any input, exit the prompt
             if(line == null) break;
             run(line);
+            hadError = false;
         }
     }
 
     private static void run(String source) {
+        // Indicate an error in exit code
+        if(hadError) System.exit(65);
+
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
@@ -50,5 +59,17 @@ public class Lox {
         for(Token token: tokens) {
             System.out.println(token);
         }
+    }
+
+    // Adding a error handler
+    static void error(int line, String message){
+        report(line, "", message);
+    }
+
+    // Producing error message
+    private static void report(int line, String where, String message) {
+        String.err.println(
+                "[line " + line + "] Error" + where + ": " + message);
+        hadError = true;
     }
 }
