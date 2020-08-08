@@ -1,3 +1,5 @@
+import tokens.TokenType;
+
 class Token {
     final TokenType type;
     final String lexeme;
