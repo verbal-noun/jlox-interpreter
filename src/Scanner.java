@@ -57,10 +57,40 @@ class Scanner {
                     addToken(SLASH);
                 }
                 break;
+            case ' ':
+            case '\r':
+            case '\t':
+                // Ignore whitespace.
+                break;
+
+            case '\n':
+                line++;
+                break;
+            case '"': string(); break;
             default:
                 Lox.error(line, "Unexpected character.");
                 break;
         }
+    }
+
+    // Function to map string
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') line++;
+            advance();
+        }
+        // Unterminated String
+        if(isAtEnd()) {
+            Lox.error(line, "Unterminated String");
+            return;
+        }
+
+        // the closing "
+        advance();
+
+        // Trim the surrounding quotes
+        String value  = source.substring(start + 1, current - 1);
+        addToken(STRING, value);
     }
 
     // Helper function match characters
