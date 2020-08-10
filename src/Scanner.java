@@ -45,10 +45,37 @@ class Scanner {
             case '+': addToken(PLUS); break;
             case ';': addToken(SEMICOLON); break;
             case '*': addToken(STAR); break;
+            case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
+            case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL); break;
+            case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;
+            case '>': addToken(match('=') ? GREATER_EQUAL : GREATER);
+            case '/':
+                if (match('/')) {
+                    // A comment goes until the end of line
+                    while (peek() != '\n' && !isAtEnd()) advance();
+                } else {
+                    addToken(SLASH);
+                }
+                break;
             default:
                 Lox.error(line, "Unexpected character.");
                 break;
         }
+    }
+
+    // Helper function match characters
+    private boolean match(char expected) {
+        if (isAtEnd()) return false;
+        if (source.charAt(current) != expected) return false;
+
+        current++;
+        return true;
+    }
+
+    // Peek at the next character
+    private char peek() {
+        if(isAtEnd()) return '\0';
+        return source.charAt(current);
     }
 
     // Helper function to tell whether we have consumed all characters or not
